@@ -31,7 +31,7 @@
 
 #include <signal.h>
 #include <unistd.h>
-
+#include <psandbox.h>
 #include "access/transam.h"
 #include "access/twophase.h"
 #include "access/twophase_rmgr.h"
@@ -568,7 +568,12 @@ LockAcquire(const LOCKTAG *locktag,
 			bool sessionLock,
 			bool dontWait)
 {
-	return LockAcquireExtended(locktag, lockmode, sessionLock, dontWait, true);
+    LockAcquireResult lockResult;
+    update_psandbox((size_t)locktag,PREPARE);
+    lockResult = LockAcquireExtended(locktag, lockmode, sessionLock, dontWait, true);
+    update_psandbox((size_t)locktag,ENTER);
+    update_psandbox((size_t)locktag,HOLD);
+    return lockResult;
 }
 
 /*
@@ -1783,6 +1788,7 @@ LockRelease(const LOCKTAG *locktag, LOCKMODE lockmode, bool sessionLock)
 	LWLockRelease(partitionLock);
 
 	RemoveLocalLock(locallock);
+	update_psandbox((size_t)locktag, UNHOLD);
 	return TRUE;
 }
 

@@ -2354,6 +2354,7 @@ CountOtherDBBackends(Oid databaseId, int *nbackends, int *nprepared)
 	int			tries;
 
 	/* 50 tries with 100ms sleep between tries makes 5 sec total wait */
+	update_psandbox((size_t)nbackends,PREPARE);
 	for (tries = 0; tries < 50; tries++)
 	{
 		int			nautovacs = 0;
@@ -2407,7 +2408,7 @@ CountOtherDBBackends(Oid databaseId, int *nbackends, int *nprepared)
 		/* sleep, then try again */
 		pg_usleep(100 * 1000L); /* 100ms */
 	}
-
+	update_psandbox((size_t)nbackends,ENTER);
 	return true;				/* timed out, still conflicts */
 }
 

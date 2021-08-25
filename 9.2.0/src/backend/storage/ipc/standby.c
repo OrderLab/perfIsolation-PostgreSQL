@@ -195,7 +195,7 @@ ResolveRecoveryConflictWithVirtualXIDs(VirtualTransactionId *waitlist,
 
 	waitStart = GetCurrentTimestamp();
 	new_status = NULL;			/* we haven't changed the ps display */
-
+	update_psandbox((size_t)waitlist,PREPARE);
 	while (VirtualTransactionIdIsValid(*waitlist))
 	{
 		/* reset standbyWait_us for each xact we wait for */
@@ -246,7 +246,7 @@ ResolveRecoveryConflictWithVirtualXIDs(VirtualTransactionId *waitlist,
 		/* The virtual transaction is gone now, wait for the next one */
 		waitlist++;
 	}
-
+	update_psandbox((size_t)waitlist,ENTER);
 	/* Reset ps display if we changed it */
 	if (new_status)
 	{

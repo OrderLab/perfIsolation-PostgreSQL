@@ -25,6 +25,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <sys/socket.h>
+#include <psandbox.h>
 #ifdef HAVE_SYS_SELECT_H
 #include <sys/select.h>
 #endif
@@ -3515,6 +3516,7 @@ PostgresMain(int argc, char *argv[], const char *username)
 	StringInfoData input_message;
 	sigjmp_buf	local_sigjmp_buf;
 	volatile bool send_ready_for_query = true;
+	PSandbox* psandbox;
 
 	/*
 	 * Initialize globals (already done if under postmaster, but not if
@@ -3863,6 +3865,7 @@ PostgresMain(int argc, char *argv[], const char *username)
 	 * Non-error queries loop here.
 	 */
 
+	psandbox = create_psandbox();
 	for (;;)
 	{
 		/*
@@ -3952,7 +3955,7 @@ PostgresMain(int argc, char *argv[], const char *username)
 		 */
 		if (ignore_till_sync && firstchar != EOF)
 			continue;
-
+		active_psandbox(psandbox);
 		switch (firstchar)
 		{
 			case 'Q':			/* simple query */
@@ -4060,6 +4063,7 @@ PostgresMain(int argc, char *argv[], const char *username)
 					if (whereToSendOutput == DestRemote)
 						whereToSendOutput = DestNone;
 
+					release_psandbox(psandbox);
 					proc_exit(0);
 				}
 
@@ -4175,6 +4179,7 @@ PostgresMain(int argc, char *argv[], const char *username)
 				 * it will fail to be called during other backend-shutdown
 				 * scenarios.
 				 */
+				release_psandbox(psandbox);
 				proc_exit(0);
 
 			case 'd':			/* copy data */
@@ -4194,6 +4199,7 @@ PostgresMain(int argc, char *argv[], const char *username)
 						 errmsg("invalid frontend message type %d",
 								firstchar)));
 		}
+		freeze_psandbox(psandbox);
 	}							/* end of input-reading loop */
 
 	/* can't get here because the above loop never exits */

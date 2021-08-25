@@ -7931,15 +7931,18 @@ CreateCheckPoint(int flags)
 	 * xacts we need to wait for.
 	 */
 	nInCommit = GetTransactionsInCommit(&inCommitXids);
+	update_psandbox((size_t)inCommitXids,PREPARE);
 	if (nInCommit > 0)
 	{
 		do
 		{
+
 			pg_usleep(10000L);	/* wait for 10 msec */
 		} while (HaveTransactionsInCommit(inCommitXids, nInCommit));
 	}
 	pfree(inCommitXids);
-
+	update_psandbox((size_t)inCommitXids,ENTER)
+	update_psandbox((size_t)inCommitXids,HOLD)
 	/*
 	 * Get the other info we need for the checkpoint record.
 	 */

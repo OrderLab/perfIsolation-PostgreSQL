@@ -14,7 +14,7 @@
  *-------------------------------------------------------------------------
  */
 #include "postgres.h"
-
+#include "psandbox.h"
 #include <time.h>
 #include <unistd.h>
 
@@ -96,7 +96,7 @@ s_lock(volatile slock_t *lock, const char *file, int line)
 	int			spins = 0;
 	int			delays = 0;
 	int			cur_delay = 0;
-
+	update_psandbox((size_t)lock,PREPARE);
 	while (TAS_SPIN(lock))
 	{
 		/* CPU-specific delay each time through the loop */
@@ -155,6 +155,8 @@ s_lock(volatile slock_t *lock, const char *file, int line)
 		if (spins_per_delay > MIN_SPINS_PER_DELAY)
 			spins_per_delay = Max(spins_per_delay - 1, MIN_SPINS_PER_DELAY);
 	}
+	update_psandbox((size_t)lock,ENTER);
+	update_psandbox((size_t)lock,HOLD);
 }
 
 
