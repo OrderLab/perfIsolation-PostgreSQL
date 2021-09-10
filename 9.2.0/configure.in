@@ -415,7 +415,7 @@ if ${PSANDBOXDIR}; then
  echo "PSANDBOXDIR environment variable is not set, building PostgreSQL without psandbox."
 else
  PSANDBOXSRC_INCLUDE="${PSANDBOXDIR}/libs/include"
- PSANDBOXSRC_LIB="${PSANDBOXDIR}/build/libs/
+ PSANDBOXSRC_LIB="${PSANDBOXDIR}/build/libs/"
 fi
 
 if test "$GCC" = yes -a "$ICC" = no; then
