@@ -94,7 +94,7 @@
 #define S_LOCK_H
 
 #include "storage/pg_sema.h"
-#include "psandbox.h"
+//#include "psandbox.h"
 #ifdef HAVE_SPINLOCKS	/* skip spinlocks if requested */
 
 
@@ -989,11 +989,11 @@ extern int	tas_sema(volatile slock_t *lock);
 #endif	 /* S_LOCK_FREE */
 
 #if !defined(S_UNLOCK)
-//#define S_UNLOCK(lock)  (*((volatile slock_t *) (lock)) = 0)
-#define S_UNLOCK(lock)		do {\
-                                      *((volatile slock_t *) (lock)) = 0; \
-                                      update_psandbox((size_t)lock,UNHOLD); \
-                              } while(0)
+#define S_UNLOCK(lock)  (*((volatile slock_t *) (lock)) = 0)
+//#define S_UNLOCK(lock)		do {\
+//                                      *((volatile slock_t *) (lock)) = 0; \
+//                                      update_psandbox((size_t)lock,UNHOLD); \
+//                              } while(0)
 #endif	 /* S_UNLOCK */
 
 #if !defined(S_INIT_LOCK)
