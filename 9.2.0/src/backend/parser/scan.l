@@ -1,4 +1,4 @@
-%{
+%top{
 /*-------------------------------------------------------------------------
  *
  * scan.l
@@ -35,11 +35,11 @@
 #include <unistd.h>
 
 #include "parser/parser.h"				/* only needed for GUC variables */
-#include "parser/scanner.h"
+#include "parser/gramparse.h"
 #include "parser/scansup.h"
 #include "mb/pg_wchar.h"
-
-
+}
+%{
 /* Avoid exit() on fatal scanner errors (a bit ugly -- see yy_fatal_error) */
 #undef fprintf
 #define fprintf(file, fmt, msg)  ereport(ERROR, (errmsg_internal("%s", msg)))

@@ -990,7 +990,7 @@ extern int	tas_sema(volatile slock_t *lock);
 
 #if !defined(S_UNLOCK)
 #define S_UNLOCK(lock)  (*((volatile slock_t *) (lock)) = 0)
-//#define S_UNLOCK(lock)		do {\
+//#define S_UNLOCK(lock)		do {
 //                                      *((volatile slock_t *) (lock)) = 0; \
 //                                      update_psandbox((size_t)lock,UNHOLD); \
 //                              } while(0)

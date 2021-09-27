@@ -13352,8 +13352,5 @@ parser_init(base_yy_extra_type *yyext)
  * Must undefine this stuff before including scan.c, since it has different
  * definitions for these macros.
  */
-#undef yyerror
-#undef yylval
-#undef yylloc
 
-#include "scan.c"
+
