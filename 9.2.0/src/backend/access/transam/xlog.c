@@ -22,6 +22,7 @@
 #include <sys/time.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#include <psandbox.h>
 
 #include "access/clog.h"
 #include "access/multixact.h"
@@ -60,6 +61,7 @@
 #include "utils/snapmgr.h"
 #include "utils/timestamp.h"
 #include "pg_trace.h"
+
 
 
 /* File path names (all relative to $PGDATA) */
@@ -7941,8 +7943,8 @@ CreateCheckPoint(int flags)
 		} while (HaveTransactionsInCommit(inCommitXids, nInCommit));
 	}
 	pfree(inCommitXids);
-	update_psandbox((size_t)inCommitXids,ENTER)
-	update_psandbox((size_t)inCommitXids,HOLD)
+	update_psandbox((size_t)inCommitXids,ENTER);
+	update_psandbox((size_t)inCommitXids,HOLD);
 	/*
 	 * Get the other info we need for the checkpoint record.
 	 */

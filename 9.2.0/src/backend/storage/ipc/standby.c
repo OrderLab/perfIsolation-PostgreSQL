@@ -15,6 +15,8 @@
  *
  *-------------------------------------------------------------------------
  */
+#include <psandbox.h>
+
 #include "postgres.h"
 #include "access/transam.h"
 #include "access/twophase.h"
@@ -29,6 +31,7 @@
 #include "storage/standby.h"
 #include "utils/ps_status.h"
 #include "utils/timestamp.h"
+
 
 /* User-settable GUC parameters */
 int			vacuum_defer_cleanup_age;

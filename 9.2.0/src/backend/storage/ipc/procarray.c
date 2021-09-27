@@ -44,6 +44,7 @@
 #include "postgres.h"
 
 #include <signal.h>
+#include <psandbox.h>
 
 #include "access/clog.h"
 #include "access/subtrans.h"

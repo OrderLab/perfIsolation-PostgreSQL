@@ -40,6 +40,7 @@
 #include <sys/time.h>
 #include <time.h>
 #include <unistd.h>
+#include <psandbox.h>
 
 #include "access/xlog_internal.h"
 #include "libpq/pqsignal.h"
