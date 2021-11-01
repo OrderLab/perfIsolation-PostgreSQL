@@ -1053,7 +1053,7 @@ RequestCheckpoint(int flags)
 					new_failed;
 
 		/* Wait for a new checkpoint to start. */
-		update_psandbox((size_t)cps->ckpt_started,PREPARE);
+//		update_psandbox((size_t)cps->ckpt_started,PREPARE);
 		for (;;)
 		{
 			SpinLockAcquire(&cps->ckpt_lck);
@@ -1066,7 +1066,7 @@ RequestCheckpoint(int flags)
 			CHECK_FOR_INTERRUPTS();
 			pg_usleep(100000L);
 		}
-		update_psandbox((size_t)cps->ckpt_started,ENTER);
+//		update_psandbox((size_t)cps->ckpt_started,ENTER);
 
 		/*
 		 * We are waiting for ckpt_done >= new_started, in a modulo sense.

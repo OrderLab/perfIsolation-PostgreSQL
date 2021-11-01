@@ -3864,8 +3864,11 @@ PostgresMain(int argc, char *argv[], const char *username)
 	/*
 	 * Non-error queries loop here.
 	 */
-
-	psandbox_id = create_psandbox();
+	IsolationRule rule;
+	rule.type = RELATIVE;
+	rule.isolation_level = 50;
+	rule.priority = 0;
+	psandbox_id = create_psandbox(rule);
 	for (;;)
 	{
 		/*
@@ -3955,7 +3958,7 @@ PostgresMain(int argc, char *argv[], const char *username)
 		 */
 		if (ignore_till_sync && firstchar != EOF)
 			continue;
-		active_psandbox(psandbox_id);
+		activate_psandbox(psandbox_id);
 		switch (firstchar)
 		{
 			case 'Q':			/* simple query */

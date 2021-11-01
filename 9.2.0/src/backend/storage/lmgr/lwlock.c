@@ -390,7 +390,7 @@ LWLockAcquire(LWLockId lockid, LWLockMode mode)
 	 * cycle because the lock is not free when a released waiter finally gets
 	 * to run.	See pgsql-hackers archives for 29-Dec-01.
 	 */
-	update_psandbox((size_t)lock,PREPARE);
+//	update_psandbox((size_t)lock,PREPARE);
 	for (;;)
 	{
 		bool		mustwait;
@@ -488,8 +488,8 @@ LWLockAcquire(LWLockId lockid, LWLockMode mode)
 
 	/* We are done updating shared state of the lock itself. */
 	SpinLockRelease(&lock->mutex);
-	update_psandbox((size_t)lock,ENTER);
-	update_psandbox((size_t)lock,HOLD);
+//	update_psandbox((size_t)lock,ENTER);
+//	update_psandbox((size_t)lock,HOLD);
 	TRACE_POSTGRESQL_LWLOCK_ACQUIRE(lockid, mode);
 
 	/* Add lock to list of locks held by this backend */
@@ -527,7 +527,7 @@ LWLockConditionalAcquire(LWLockId lockid, LWLockMode mode)
 	 * manipulations of data structures in shared memory.
 	 */
 	HOLD_INTERRUPTS();
-	update_psandbox((size_t)lock,PREPARE);
+//	update_psandbox((size_t)lock,PREPARE);
 	/* Acquire mutex.  Time spent holding mutex should be short! */
 	SpinLockAcquire(&lock->mutex);
 
@@ -555,7 +555,7 @@ LWLockConditionalAcquire(LWLockId lockid, LWLockMode mode)
 
 	/* We are done updating shared state of the lock itself. */
 	SpinLockRelease(&lock->mutex);
-	update_psandbox((size_t)lock,ENTER);
+//	update_psandbox((size_t)lock,ENTER);
 	if (mustwait)
 	{
 		/* Failed to get lock, so release interrupt holdoff */
