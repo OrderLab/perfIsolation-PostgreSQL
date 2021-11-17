@@ -568,7 +568,7 @@ LWLockConditionalAcquire(LWLockId lockid, LWLockMode mode)
 		/* Add lock to list of locks held by this backend */
 		held_lwlocks[num_held_lwlocks++] = lockid;
 		TRACE_POSTGRESQL_LWLOCK_CONDACQUIRE(lockid, mode);
-		update_psandbox((size_t)lock,HOLD);
+//		update_psandbox((size_t)lock,HOLD);
 	}
 
 	return !mustwait;
@@ -614,7 +614,7 @@ LWLockAcquireOrWait(LWLockId lockid, LWLockMode mode)
 	 * manipulations of data structures in shared memory.
 	 */
 	HOLD_INTERRUPTS();
-	update_psandbox((size_t)lock,PREPARE);
+//	update_psandbox((size_t)lock,PREPARE);
 	/* Acquire mutex.  Time spent holding mutex should be short! */
 	SpinLockAcquire(&lock->mutex);
 
@@ -700,7 +700,7 @@ LWLockAcquireOrWait(LWLockId lockid, LWLockMode mode)
 	 */
 	while (extraWaits-- > 0)
 		PGSemaphoreUnlock(&proc->sem);
-	update_psandbox((size_t)lock,ENTER);
+//	update_psandbox((size_t)lock,ENTER);
 	if (mustwait)
 	{
 		/* Failed to get lock, so release interrupt holdoff */
@@ -713,7 +713,7 @@ LWLockAcquireOrWait(LWLockId lockid, LWLockMode mode)
 		/* Add lock to list of locks held by this backend */
 		held_lwlocks[num_held_lwlocks++] = lockid;
 		TRACE_POSTGRESQL_LWLOCK_WAIT_UNTIL_FREE(lockid, mode);
-		update_psandbox((size_t)lock,HOLD);
+//		update_psandbox((size_t)lock,HOLD);
 	}
 
 	return !mustwait;
@@ -836,7 +836,7 @@ LWLockRelease(LWLockId lockid)
 		proc->lwWaiting = false;
 		PGSemaphoreUnlock(&proc->sem);
 	}
-	update_psandbox((size_t)lock,UNHOLD);
+//	update_psandbox((size_t)lock,UNHOLD);
 	/*
 	 * Now okay to allow cancel/die interrupts.
 	 */

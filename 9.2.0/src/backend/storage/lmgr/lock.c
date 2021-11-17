@@ -572,7 +572,7 @@ LockAcquire(const LOCKTAG *locktag,
     update_psandbox((size_t)locktag,PREPARE);
     lockResult = LockAcquireExtended(locktag, lockmode, sessionLock, dontWait, true);
     update_psandbox((size_t)locktag,ENTER);
-    update_psandbox((size_t)locktag,HOLD);
+
     return lockResult;
 }
 
