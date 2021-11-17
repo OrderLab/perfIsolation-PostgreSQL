@@ -569,9 +569,9 @@ LockAcquire(const LOCKTAG *locktag,
 			bool dontWait)
 {
     LockAcquireResult lockResult;
-    update_psandbox((size_t)locktag,PREPARE);
+//    update_psandbox((size_t)locktag,PREPARE);
     lockResult = LockAcquireExtended(locktag, lockmode, sessionLock, dontWait, true);
-    update_psandbox((size_t)locktag,ENTER);
+//    update_psandbox((size_t)locktag,ENTER);
 
     return lockResult;
 }
@@ -1788,7 +1788,7 @@ LockRelease(const LOCKTAG *locktag, LOCKMODE lockmode, bool sessionLock)
 	LWLockRelease(partitionLock);
 
 	RemoveLocalLock(locallock);
-	update_psandbox((size_t)locktag, UNHOLD);
+//	update_psandbox((size_t)locktag, UNHOLD);
 	return TRUE;
 }
 
