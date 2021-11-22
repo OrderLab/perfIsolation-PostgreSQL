@@ -1,3 +1,5 @@
 .idea/
 build/
 dist
+9.2.0/cmake-build-debug/
+9.2.0/CMakeLists.txt
