@@ -1,3 +1,0 @@
-/home/yigonghu/research/perfIsolation/software/postgresql/9.2.0/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/home/yigonghu/research/perfIsolation/software/postgresql/9.2.0/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/yigonghu/research/perfIsolation/software/postgresql/9.2.0/cmake-build-debug/CMakeFiles/9_2_0.dir
