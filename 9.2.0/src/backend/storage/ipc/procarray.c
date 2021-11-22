@@ -2355,9 +2355,7 @@ CountOtherDBBackends(Oid databaseId, int *nbackends, int *nprepared)
 	int			tries;
 
 	/* 50 tries with 100ms sleep between tries makes 5 sec total wait */
-	update_
-
-//	psandbox((size_t)nbackends,PREPARE);
+//	update_psandbox((size_t)nbackends,PREPARE);
 	for (tries = 0; tries < 50; tries++)
 	{
 		int			nautovacs = 0;

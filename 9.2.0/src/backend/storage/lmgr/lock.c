@@ -569,9 +569,8 @@ LockAcquire(const LOCKTAG *locktag,
 			bool dontWait)
 {
     LockAcquireResult lockResult;
-//    update_psandbox((size_t)locktag,PREPARE);
+
     lockResult = LockAcquireExtended(locktag, lockmode, sessionLock, dontWait, true);
-//    update_psandbox((size_t)locktag,ENTER);
 
     return lockResult;
 }
@@ -761,8 +760,10 @@ LockAcquireExtended(const LOCKTAG *locktag,
 						(errcode(ERRCODE_OUT_OF_MEMORY),
 						 errmsg("out of shared memory"),
 						 errhint("You might need to increase max_locks_per_transaction.")));
-			else
-				return LOCKACQUIRE_NOT_AVAIL;
+			else {
+			  return LOCKACQUIRE_NOT_AVAIL;
+			}
+
 		}
 	}
 
@@ -789,13 +790,16 @@ LockAcquireExtended(const LOCKTAG *locktag,
 					(errcode(ERRCODE_OUT_OF_MEMORY),
 					 errmsg("out of shared memory"),
 					 errhint("You might need to increase max_locks_per_transaction.")));
-		else
-			return LOCKACQUIRE_NOT_AVAIL;
+		else {
+
+		  return LOCKACQUIRE_NOT_AVAIL;
+		}
+
 	}
 	locallock->proclock = proclock;
 	lock = proclock->tag.myLock;
 	locallock->lock = lock;
-
+	update_psandbox((size_t)lock,PREPARE);
 	/*
 	 * If lock requested conflicts with locks requested by waiters, must join
 	 * wait queue.	Otherwise, check for conflict with already-held locks.
@@ -849,6 +853,7 @@ LockAcquireExtended(const LOCKTAG *locktag,
 			LWLockRelease(partitionLock);
 			if (locallock->nLocks == 0)
 				RemoveLocalLock(locallock);
+			update_psandbox((size_t)lock,ENTER);
 			return LOCKACQUIRE_NOT_AVAIL;
 		}
 
@@ -922,6 +927,7 @@ LockAcquireExtended(const LOCKTAG *locktag,
 		LogAccessExclusiveLock(locktag->locktag_field1,
 							   locktag->locktag_field2);
 	}
+	update_psandbox((size_t)lock,ENTER);
 
 	return LOCKACQUIRE_OK;
 }
@@ -1105,6 +1111,7 @@ RemoveLocalLock(LOCALLOCK *locallock)
 {
 	pfree(locallock->lockOwners);
 	locallock->lockOwners = NULL;
+
 	if (locallock->holdsStrongLockCount)
 	{
 		uint32		fasthashcode;
@@ -1208,6 +1215,7 @@ LockCheckConflicts(LockMethod lockMethodTable,
 void
 GrantLock(LOCK *lock, PROCLOCK *proclock, LOCKMODE lockmode)
 {
+  update_psandbox((size_t)lock, HOLD);
 	lock->nGranted++;
 	lock->granted[lockmode]++;
 	lock->grantMask |= LOCKBIT_ON(lockmode);
@@ -1564,7 +1572,7 @@ RemoveFromWaitQueue(PGPROC *proc, uint32 hashcode)
 	Assert(proc->links.next != NULL);
 	Assert(waitLock);
 	Assert(waitLock->waitProcs.size > 0);
-	Assert(0 < lockmethodid && lockmethodid < lengthof(LockMethods));
+	Assert(0 < lockmethodid && lockmethodid < lengthof(LoWaitOnLockckMethods));
 
 	/* Remove proc from lock's wait queue */
 	SHMQueueDelete(&(proc->links));
@@ -1788,7 +1796,7 @@ LockRelease(const LOCKTAG *locktag, LOCKMODE lockmode, bool sessionLock)
 	LWLockRelease(partitionLock);
 
 	RemoveLocalLock(locallock);
-//	update_psandbox((size_t)locktag, UNHOLD);
+	update_psandbox((size_t) lock, UNHOLD);
 	return TRUE;
 }
 
@@ -1949,6 +1957,7 @@ LockReleaseAll(LOCKMETHODID lockmethodid, bool allLocks)
 
 		/* And remove the locallock hashtable entry */
 		RemoveLocalLock(locallock);
+
 	}
 
 	if (have_fast_path_lwlock)
@@ -2037,6 +2046,7 @@ LockReleaseAll(LOCKMETHODID lockmethodid, bool allLocks)
 		}						/* loop over PROCLOCKs within this partition */
 
 		LWLockRelease(partitionLock);
+		update_psandbox((size_t) lock, UNHOLD);
 	}							/* loop over partitions */
 
 #ifdef LOCK_DEBUG
@@ -2730,7 +2740,7 @@ LockRefindAndRelease(LockMethod lockMethodTable, PGPROC *proc,
 				wakeupNeeded);
 
 	LWLockRelease(partitionLock);
-
+	update_psandbox((size_t) lock, UNHOLD);
 	/*
 	 * Decrement strong lock count.  This logic is needed only for 2PC.
 	 */
