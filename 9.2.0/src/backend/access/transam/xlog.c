@@ -23,6 +23,8 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include <psandbox.h>
+#include <rkdef.h>
+#include <sys/param.h>
 
 #include "access/clog.h"
 #include "access/multixact.h"
@@ -7551,7 +7553,23 @@ GetRecoveryTargetTLI(void)
 
 	return result;
 }
+/*****  Psandbox changes  ******/
+void output_all_log() {
+  (void)!system("mkdir -p /tmp/mysql-log-data");
+  char *id;
+  sprintf(id, "%lu", getpid());
+  char* data_file_name = strcat(strcat("/tmp/mysql-log-data/mysql-",id), ".data");
 
+  FILE *file = fopen(data_file_name,"w+");
+  for (size_t i = 0, end = MIN(all_log_count, RKLOGMAX); i < end; ++i) {
+    char* tid,*duration;
+    sprintf(tid, "%lu", all_log[i].tid);
+    sprintf(duration, "%llu", all_log[i].duration);
+    char* str= strcat(strcat(tid,","),duration);
+    fwrite(str,1,sizeof(str),file);
+  }
+  fclose(file);
+}
 /*
  * This must be called ONCE during postmaster or standalone-backend shutdown
  */
@@ -7579,7 +7597,7 @@ ShutdownXLOG(int code, Datum arg)
 	ShutdownCLOG();
 	ShutdownSUBTRANS();
 	ShutdownMultiXact();
-
+	output_all_log();
 	ereport(LOG,
 			(errmsg("database system is shut down")));
 }
