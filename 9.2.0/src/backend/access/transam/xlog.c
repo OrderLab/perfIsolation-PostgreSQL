@@ -7555,10 +7555,10 @@ GetRecoveryTargetTLI(void)
 }
 /*****  Psandbox changes  ******/
 void output_all_log() {
-  (void)!system("mkdir -p /tmp/mysql-log-data");
+  (void)!system("mkdir -p /tmp/postgres-log-data");
   char *id;
   sprintf(id, "%lu", getpid());
-  char* data_file_name = strcat(strcat("/tmp/mysql-log-data/mysql-",id), ".data");
+  char* data_file_name = strcat(strcat("/tmp/postgres-log-data/postgres-",id), ".data");
 
   FILE *file = fopen(data_file_name,"w+");
   for (size_t i = 0, end = MIN(all_log_count, RKLOGMAX); i < end; ++i) {
