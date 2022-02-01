@@ -26,6 +26,7 @@
 #include <unistd.h>
 #include <sys/socket.h>
 #include <psandbox.h>
+#include <rkdef.h>
 #ifdef HAVE_SYS_SELECT_H
 #include <sys/select.h>
 #endif
@@ -3871,6 +3872,7 @@ PostgresMain(int argc, char *argv[], const char *username)
 	psandbox_id = create_psandbox(rule);
 	for (;;)
 	{
+	  struct timespec start,end;
 		/*
 		 * At top of loop, reset extended-query-message flag, so that any
 		 * errors encountered in "idle" state don't provoke skip.
@@ -3958,6 +3960,7 @@ PostgresMain(int argc, char *argv[], const char *username)
 		 */
 		if (ignore_till_sync && firstchar != EOF)
 			continue;
+		clock_gettime(CLOCK_REALTIME,&start);
 		activate_psandbox(psandbox_id);
 		switch (firstchar)
 		{
@@ -4203,6 +4206,8 @@ PostgresMain(int argc, char *argv[], const char *username)
 								firstchar)));
 		}
 		freeze_psandbox(psandbox_id);
+		clock_gettime(CLOCK_REALTIME,&end);
+		put_log(pthread_self(), time2ns(timeDiff(start,end)));
 	}							/* end of input-reading loop */
 
 	/* can't get here because the above loop never exits */

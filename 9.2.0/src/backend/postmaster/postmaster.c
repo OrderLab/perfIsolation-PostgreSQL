@@ -78,6 +78,7 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <limits.h>
+#include <rkdef.h>
 
 #ifdef HAVE_SYS_SELECT_H
 #include <sys/select.h>
@@ -488,6 +489,24 @@ int			postmaster_alive_fds[2] = {-1, -1};
 /* Process handle of postmaster used for the same purpose on Windows */
 HANDLE		PostmasterHandle;
 #endif
+
+/*****  Psandbox changes  ******/
+void output_all_log() {
+  (void)!system("mkdir -p /tmp/mysql-log-data");
+  char *id;
+  sprintf(id, "%lu", getpid());
+  char* data_file_name = strcat(strcat("/tmp/mysql-log-data/mysql-",id), ".data");
+
+  FILE *file = fopen(data_file_name,"w+");
+  for (size_t i = 0, end = MIN(all_log_count, RKLOGMAX); i < end; ++i) {
+    char* tid,*duration;
+    sprintf(tid, "%lu", all_log[i].tid);
+    sprintf(duration, "%llu", all_log[i].duration);
+    char* str= strcat(strcat(tid,","),duration);
+    fwrite(str,1,sizeof(str),file);
+  }
+  fclose(file);
+}
 
 /*
  * Postmaster main entry point
@@ -1125,7 +1144,7 @@ PostmasterMain(int argc, char *argv[])
 	pmState = PM_STARTUP;
 
 	status = ServerLoop();
-
+	output_all_log();
 	/*
 	 * ServerLoop probably shouldn't ever return, but if it does, close down.
 	 */
