@@ -15,9 +15,6 @@ struct Rec {
 sig_atomic_t all_log_count;
 struct Rec all_log[RKLOGMAX];
 
-
-
-
 inline void put_log( pthread_t t, long long d) {
   size_t count = all_log_count++;
   if (count < RKLOGMAX) {
