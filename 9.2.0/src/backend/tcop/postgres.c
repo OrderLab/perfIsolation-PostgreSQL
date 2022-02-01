@@ -27,6 +27,7 @@
 #include <sys/socket.h>
 #include <psandbox.h>
 #include <rkdef.h>
+#include <sys/param.h>
 #ifdef HAVE_SYS_SELECT_H
 #include <sys/select.h>
 #endif
@@ -3497,7 +3498,29 @@ process_postgres_switches(int argc, char *argv[], GucContext ctx)
 
 	return dbname;
 }
-
+/*****  Psandbox changes  ******/
+void output_all_log() {
+  (void)!system("mkdir -p /tmp/postgres-log-data");
+  char id[20];
+  sprintf(id, "%lu", getpid());
+  char data_file_name[80];
+  strcpy(data_file_name,"/tmp/postgres-log-data/postgres-");
+  strcat(data_file_name,id);
+  strcat(data_file_name, ".data");
+  FILE *file = fopen(data_file_name,"w+");
+  for (size_t i = 0, end = MIN(all_log_count, RKLOGMAX); i < end; ++i) {
+    char tid[40],duration[40];
+    char str[80];
+    sprintf(tid, "%lu", all_log[i].tid);
+    sprintf(duration, "%llu", all_log[i].duration);
+    strcpy(str,tid);
+    strcat(str,",");
+    strcat(str,duration);
+    strcat(str,"\0");
+    fwrite(str,1,sizeof(str),file);
+  }
+  fclose(file);
+}
 
 /* ----------------------------------------------------------------
  * PostgresMain
@@ -4070,6 +4093,7 @@ PostgresMain(int argc, char *argv[], const char *username)
 						whereToSendOutput = DestNone;
 
 					release_psandbox(psandbox_id);
+					output_all_log();
 					proc_exit(0);
 				}
 
@@ -4186,6 +4210,7 @@ PostgresMain(int argc, char *argv[], const char *username)
 				 * scenarios.
 				 */
 				release_psandbox(psandbox_id);
+				output_all_log();
 				proc_exit(0);
 
 			case 'd':			/* copy data */
