@@ -3516,8 +3516,8 @@ void output_all_log() {
     strcpy(str,tid);
     strcat(str,",");
     strcat(str,duration);
-    strcat(str,"\0");
-    fwrite(str,1,sizeof(str),file);
+    strcat(str,"\n\0");
+    fwrite(str,1,strlen(str),file);
   }
   fclose(file);
 }
@@ -4000,6 +4000,8 @@ PostgresMain(int argc, char *argv[], const char *username)
 					exec_simple_query(query_string);
 
 					send_ready_for_query = true;
+					clock_gettime(CLOCK_REALTIME,&end);
+					put_log(pthread_self(), time2ns(timeDiff(start,end)));
 				}
 				break;
 
@@ -4231,8 +4233,7 @@ PostgresMain(int argc, char *argv[], const char *username)
 								firstchar)));
 		}
 		freeze_psandbox(psandbox_id);
-		clock_gettime(CLOCK_REALTIME,&end);
-		put_log(pthread_self(), time2ns(timeDiff(start,end)));
+
 	}							/* end of input-reading loop */
 
 	/* can't get here because the above loop never exits */

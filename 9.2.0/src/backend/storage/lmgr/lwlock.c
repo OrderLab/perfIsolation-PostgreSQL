@@ -491,10 +491,7 @@ LWLockAcquire(LWLockId lockid, LWLockMode mode)
 
 	/* We are done updating shared state of the lock itself. */
 	SpinLockRelease(&lock->mutex);
-	if (lockid == WALWriteLock || lockid == WALInsertLock) {
-		update_psandbox((size_t)lock,ENTER);
-		update_psandbox((size_t)lock,HOLD);
-	}
+
 
 	TRACE_POSTGRESQL_LWLOCK_ACQUIRE(lockid, mode);
 
@@ -506,6 +503,11 @@ LWLockAcquire(LWLockId lockid, LWLockMode mode)
 	 */
 	while (extraWaits-- > 0)
 		PGSemaphoreUnlock(&proc->sem);
+
+	if (lockid == WALWriteLock || lockid == WALInsertLock) {
+	  update_psandbox((size_t)lock,ENTER);
+	  update_psandbox((size_t)lock,HOLD);
+	}
 }
 
 /*
@@ -621,7 +623,7 @@ LWLockAcquireOrWait(LWLockId lockid, LWLockMode mode)
 	 */
 	HOLD_INTERRUPTS();
 
-	update_psandbox((size_t)lock,PREPARE);
+//	update_psandbox((size_t)lock,PREPARE);
 	/* Acquire mutex.  Time spent holding mutex should be short! */
 	SpinLockAcquire(&lock->mutex);
 
@@ -722,8 +724,8 @@ LWLockAcquireOrWait(LWLockId lockid, LWLockMode mode)
 		TRACE_POSTGRESQL_LWLOCK_WAIT_UNTIL_FREE(lockid, mode);
 
 	}
-	update_psandbox((size_t)lock,ENTER);
-	update_psandbox((size_t)lock,HOLD);
+//	update_psandbox((size_t)lock,ENTER);
+//	update_psandbox((size_t)lock,HOLD);
 	return !mustwait;
 }
 
@@ -831,9 +833,7 @@ LWLockRelease(LWLockId lockid)
 	SpinLockRelease(&lock->mutex);
 
 	TRACE_POSTGRESQL_LWLOCK_RELEASE(lockid);
-	if (lockid == WALWriteLock || lockid == WALInsertLock) {
-		update_psandbox((size_t)lock,UNHOLD);
-	}
+
 	/*
 	 * Awaken any waiters I removed from the queue.
 	 */
@@ -847,7 +847,9 @@ LWLockRelease(LWLockId lockid)
 		PGSemaphoreUnlock(&proc->sem);
 	}
 
-
+		if (lockid == WALWriteLock || lockid == WALInsertLock) {
+			update_psandbox((size_t)lock,UNHOLD);
+		}
 	/*
 	 * Now okay to allow cancel/die interrupts.
 	 */
