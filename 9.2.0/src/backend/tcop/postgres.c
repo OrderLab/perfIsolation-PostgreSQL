@@ -3500,11 +3500,11 @@ process_postgres_switches(int argc, char *argv[], GucContext ctx)
 }
 /*****  Psandbox changes  ******/
 void output_all_log() {
-  (void)!system("mkdir -p /tmp/postgres-log-data");
+  (void)!system("mkdir -p /tmp/log-data");
   char id[20];
   sprintf(id, "%lu", getpid());
   char data_file_name[80];
-  strcpy(data_file_name,"/tmp/postgres-log-data/postgres-");
+  strcpy(data_file_name,"/tmp/log-data/postgres-");
   strcat(data_file_name,id);
   strcat(data_file_name, ".data");
   FILE *file = fopen(data_file_name,"w+");
@@ -4106,7 +4106,7 @@ PostgresMain(int argc, char *argv[], const char *username)
 				break;
 
 			case 'C':			/* close */
-				{
+			{
 					int			close_type;
 					const char *close_target;
 

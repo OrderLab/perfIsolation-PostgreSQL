@@ -1215,7 +1215,7 @@ LockCheckConflicts(LockMethod lockMethodTable,
 void
 GrantLock(LOCK *lock, PROCLOCK *proclock, LOCKMODE lockmode)
 {
-  update_psandbox((size_t)lock, HOLD);
+    update_psandbox((size_t)lock, HOLD);
 	lock->nGranted++;
 	lock->granted[lockmode]++;
 	lock->grantMask |= LOCKBIT_ON(lockmode);

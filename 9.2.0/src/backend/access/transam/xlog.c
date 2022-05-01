@@ -2138,6 +2138,7 @@ XLogFlush(XLogRecPtr record)
 	 * Now wait until we get the write lock, or someone else does the flush
 	 * for us.
 	 */
+
 	for (;;)
 	{
 		/* use volatile pointer to prevent code rearrangement */
