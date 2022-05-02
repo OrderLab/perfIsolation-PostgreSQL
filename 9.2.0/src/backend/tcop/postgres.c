@@ -4001,7 +4001,7 @@ PostgresMain(int argc, char *argv[], const char *username)
 
 					send_ready_for_query = true;
 					clock_gettime(CLOCK_REALTIME,&end);
-					put_log(pthread_self(), time2ns(timeDiff(start,end)));
+//					put_log(pthread_self(), time2ns(timeDiff(start,end)));
 				}
 				break;
 

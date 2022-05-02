@@ -799,7 +799,7 @@ LockAcquireExtended(const LOCKTAG *locktag,
 	locallock->proclock = proclock;
 	lock = proclock->tag.myLock;
 	locallock->lock = lock;
-	update_psandbox((size_t)lock,PREPARE);
+//	update_psandbox((size_t)lock,PREPARE);
 	/*
 	 * If lock requested conflicts with locks requested by waiters, must join
 	 * wait queue.	Otherwise, check for conflict with already-held locks.
@@ -853,7 +853,7 @@ LockAcquireExtended(const LOCKTAG *locktag,
 			LWLockRelease(partitionLock);
 			if (locallock->nLocks == 0)
 				RemoveLocalLock(locallock);
-			update_psandbox((size_t)lock,ENTER);
+//			update_psandbox((size_t)lock,ENTER);
 			return LOCKACQUIRE_NOT_AVAIL;
 		}
 
@@ -927,7 +927,7 @@ LockAcquireExtended(const LOCKTAG *locktag,
 		LogAccessExclusiveLock(locktag->locktag_field1,
 							   locktag->locktag_field2);
 	}
-	update_psandbox((size_t)lock,ENTER);
+//	update_psandbox((size_t)lock,ENTER);
 
 	return LOCKACQUIRE_OK;
 }
@@ -1215,7 +1215,7 @@ LockCheckConflicts(LockMethod lockMethodTable,
 void
 GrantLock(LOCK *lock, PROCLOCK *proclock, LOCKMODE lockmode)
 {
-    update_psandbox((size_t)lock, HOLD);
+//    update_psandbox((size_t)lock, HOLD);
 	lock->nGranted++;
 	lock->granted[lockmode]++;
 	lock->grantMask |= LOCKBIT_ON(lockmode);
@@ -1796,7 +1796,7 @@ LockRelease(const LOCKTAG *locktag, LOCKMODE lockmode, bool sessionLock)
 	LWLockRelease(partitionLock);
 
 	RemoveLocalLock(locallock);
-	update_psandbox((size_t) lock, UNHOLD);
+//	update_psandbox((size_t) lock, UNHOLD);
 	return TRUE;
 }
 
@@ -2046,7 +2046,7 @@ LockReleaseAll(LOCKMETHODID lockmethodid, bool allLocks)
 		}						/* loop over PROCLOCKs within this partition */
 
 		LWLockRelease(partitionLock);
-		update_psandbox((size_t) lock, UNHOLD);
+//		update_psandbox((size_t) lock, UNHOLD);
 	}							/* loop over partitions */
 
 #ifdef LOCK_DEBUG
@@ -2740,7 +2740,7 @@ LockRefindAndRelease(LockMethod lockMethodTable, PGPROC *proc,
 				wakeupNeeded);
 
 	LWLockRelease(partitionLock);
-	update_psandbox((size_t) lock, UNHOLD);
+//	update_psandbox((size_t) lock, UNHOLD);
 	/*
 	 * Decrement strong lock count.  This logic is needed only for 2PC.
 	 */

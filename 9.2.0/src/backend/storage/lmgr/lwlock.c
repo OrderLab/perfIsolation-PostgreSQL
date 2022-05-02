@@ -391,7 +391,7 @@ LWLockAcquire(LWLockId lockid, LWLockMode mode)
 	 * to run.	See pgsql-hackers archives for 29-Dec-01.
 	 */
 	if(lockid == WALWriteLock || lockid == WALInsertLock) {
-		update_psandbox((size_t)lock,PREPARE);
+//		update_psandbox((size_t)lock,PREPARE);
 	}
 
 	for (;;)
@@ -505,8 +505,8 @@ LWLockAcquire(LWLockId lockid, LWLockMode mode)
 		PGSemaphoreUnlock(&proc->sem);
 
 	if (lockid == WALWriteLock || lockid == WALInsertLock) {
-	  update_psandbox((size_t)lock,ENTER);
-	  update_psandbox((size_t)lock,HOLD);
+//	  update_psandbox((size_t)lock,ENTER);
+//	  update_psandbox((size_t)lock,HOLD);
 	}
 }
 
@@ -848,7 +848,7 @@ LWLockRelease(LWLockId lockid)
 	}
 
 		if (lockid == WALWriteLock || lockid == WALInsertLock) {
-			update_psandbox((size_t)lock,UNHOLD);
+//			update_psandbox((size_t)lock,UNHOLD);
 		}
 	/*
 	 * Now okay to allow cancel/die interrupts.
