@@ -535,7 +535,7 @@ LWLockConditionalAcquire(LWLockId lockid, LWLockMode mode)
 	 * manipulations of data structures in shared memory.
 	 */
 	HOLD_INTERRUPTS();
-//	update_psandbox((size_t)lock,PREPARE);
+
 	/* Acquire mutex.  Time spent holding mutex should be short! */
 	SpinLockAcquire(&lock->mutex);
 
@@ -563,7 +563,7 @@ LWLockConditionalAcquire(LWLockId lockid, LWLockMode mode)
 
 	/* We are done updating shared state of the lock itself. */
 	SpinLockRelease(&lock->mutex);
-//	update_psandbox((size_t)lock,ENTER);
+
 	if (mustwait)
 	{
 		/* Failed to get lock, so release interrupt holdoff */
@@ -576,7 +576,7 @@ LWLockConditionalAcquire(LWLockId lockid, LWLockMode mode)
 		/* Add lock to list of locks held by this backend */
 		held_lwlocks[num_held_lwlocks++] = lockid;
 		TRACE_POSTGRESQL_LWLOCK_CONDACQUIRE(lockid, mode);
-//		update_psandbox((size_t)lock,HOLD);
+
 	}
 
 	return !mustwait;
@@ -623,7 +623,7 @@ LWLockAcquireOrWait(LWLockId lockid, LWLockMode mode)
 	 */
 	HOLD_INTERRUPTS();
 
-//	update_psandbox((size_t)lock,PREPARE);
+
 	/* Acquire mutex.  Time spent holding mutex should be short! */
 	SpinLockAcquire(&lock->mutex);
 
@@ -724,8 +724,6 @@ LWLockAcquireOrWait(LWLockId lockid, LWLockMode mode)
 		TRACE_POSTGRESQL_LWLOCK_WAIT_UNTIL_FREE(lockid, mode);
 
 	}
-//	update_psandbox((size_t)lock,ENTER);
-//	update_psandbox((size_t)lock,HOLD);
 	return !mustwait;
 }
 
