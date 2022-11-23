@@ -3,3 +3,6 @@ build/
 dist
 9.2.0/cmake-build-debug/
 9.2.0/CMakeLists.txt
+postgresql-9.2.0/
+vbuild
+postgresql-9.2.0.tar.gz
