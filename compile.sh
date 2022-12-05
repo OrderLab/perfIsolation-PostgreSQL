@@ -2,6 +2,7 @@
 
 mkdir -p {dist,build}
 cd build
+sudo apt install -y libreadline-dev
 
 ../9.2.0/configure --prefix=$(pwd)/../dist
 make -j4

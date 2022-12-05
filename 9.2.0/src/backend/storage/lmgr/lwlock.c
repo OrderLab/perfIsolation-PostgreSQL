@@ -390,7 +390,7 @@ LWLockAcquire(LWLockId lockid, LWLockMode mode)
 	 * cycle because the lock is not free when a released waiter finally gets
 	 * to run.	See pgsql-hackers archives for 29-Dec-01.
 	 */
-	if(lockid == WALWriteLock || lockid == WALInsertLock) {
+	if(lockid == WALWriteLock) {
 		update_psandbox((size_t)lock,PREPARE);
 	}
 
@@ -504,7 +504,7 @@ LWLockAcquire(LWLockId lockid, LWLockMode mode)
 	while (extraWaits-- > 0)
 		PGSemaphoreUnlock(&proc->sem);
 
-	if (lockid == WALWriteLock || lockid == WALInsertLock) {
+	if (lockid == WALWriteLock) {
 	  update_psandbox((size_t)lock,ENTER);
 	  update_psandbox((size_t)lock,HOLD);
 	}
@@ -845,7 +845,7 @@ LWLockRelease(LWLockId lockid)
 		PGSemaphoreUnlock(&proc->sem);
 	}
 
-		if (lockid == WALWriteLock || lockid == WALInsertLock) {
+		if (lockid == WALWriteLock) {
 			update_psandbox((size_t)lock,UNHOLD);
 		}
 	/*
