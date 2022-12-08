@@ -4095,7 +4095,7 @@ PostgresMain(int argc, char *argv[], const char *username)
 						whereToSendOutput = DestNone;
 
 					release_psandbox(psandbox_id);
-					output_all_log();
+					// output_all_log();
 					proc_exit(0);
 				}
 
@@ -4212,7 +4212,7 @@ PostgresMain(int argc, char *argv[], const char *username)
 				 * scenarios.
 				 */
 				release_psandbox(psandbox_id);
-				output_all_log();
+				//output_all_log();
 				proc_exit(0);
 
 			case 'd':			/* copy data */
