@@ -393,9 +393,7 @@ LWLockAcquire(LWLockId lockid, LWLockMode mode)
 	if(lockid == WALWriteLock) {
           update_psandbox((size_t)lock,PREPARE);
 	} else if (lockid == WALInsertLock) {
-          int pid = get_current_psandbox();
-          if (!get_sample_rate(pid)) {
-            sample_psandbox(pid);
+          if (!get_sample_rate()) {
             update_psandbox((size_t)lock,PREPARE);
           }
         }
@@ -514,8 +512,7 @@ LWLockAcquire(LWLockId lockid, LWLockMode mode)
 	  update_psandbox((size_t)lock,ENTER);
 	  update_psandbox((size_t)lock,HOLD);
 	} else if (lockid == WALInsertLock) {
-          int pid = get_current_psandbox();
-          if (!get_sample_rate(pid)) {
+          if (!is_sample(0)) {
             update_psandbox((size_t)lock,ENTER);
             update_psandbox((size_t)lock,HOLD);
           }
@@ -861,8 +858,7 @@ LWLockRelease(LWLockId lockid)
           update_psandbox((size_t)lock,UNHOLD);
         }  else if (lockid == WALInsertLock) {
           int pid = get_current_psandbox();
-          if (!get_sample_rate(pid)) {
-            end_sample_psandbox(pid);
+          if (!is_sample(1)) {
             update_psandbox((size_t)lock,UNHOLD);
           }
         }
